@@ -1,0 +1,33 @@
+language: dart
+
+sudo: require
+
+service:
+  - docker
+
+git:
+  depth: false
+  quiet: true
+
+notifications:
+  email:
+    recipients:
+    - nicolas.gardes@epitech.eu
+    - andy.begin@epitech.eu
+    on_success: change
+    on_failure: always
+
+jobs:
+  include:
+    - stage: deploy
+      script:
+        - chmod +x ./ci/deploy.sh
+      deploy:
+        provider: script
+        script: bash ci/deploy.sh
+        on:
+          branch: master
+
+stages:
+  - name: deploy
+    if: branch = master
