@@ -1,120 +1,328 @@
-import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:flutter/material.dart';
-import 'package:http_parser/http_parser.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'package:webview_flutter/webview_flutter.dart';
 
-main() async {
-  var client = getClient();
-  runApp(MyApp());
+void main() => runApp(MaterialApp(home: WebViewExample()));
+
+const String kNavigationExamplePage = '''
+<!DOCTYPE html><html>
+<head><title>Navigation Delegate Example</title></head>
+<body>
+<p>
+The navigation delegate is set to block navigation to the youtube website.
+</p>
+<ul>
+<ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
+<ul><a href="https://www.google.com/">https://www.google.com/</a></ul>
+</ul>
+</body>
+</html>
+''';
+
+class WebViewExample extends StatefulWidget {
+  @override
+  _WebViewExampleState createState() => _WebViewExampleState();
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _WebViewExampleState extends State<WebViewExample> {
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
+
   @override
-  Widget build(BuildContext context){
-    // doSomeAction();
-    return MaterialApp(
-      title: 'hello',
-      home: Scaffold(
-        body: Container(
-          child: Center(
-            child: Text('hello'),
-          ),
-        ),
-      )
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter WebView example'),
+        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
+        actions: <Widget>[
+          NavigationControls(_controller.future),
+          SampleMenu(_controller.future),
+        ],
+      ),
+      // We're using a Builder here so we have a context that is below the Scaffold
+      // to allow calling Scaffold.of(context) so we can show a snackbar.
+      body: Builder(builder: (BuildContext context) {
+        return WebView(
+          initialUrl: 'https://api.imgur.com/oauth2/authorize?client_id=ca42024bf4b47ff&response_type=token',
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController webViewController) {
+            _controller.complete(webViewController);
+          },
+          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
+          // ignore: prefer_collection_literals
+          javascriptChannels: <JavascriptChannel>[
+            _toasterJavascriptChannel(context),
+          ].toSet(),
+          navigationDelegate: (NavigationRequest request) {
+            if (request.url.startsWith('https://www.youtube.com/')) {
+              print('blocking navigation to $request}');
+              return NavigationDecision.prevent;
+            }
+            print('allowing navigation to $request');
+            return NavigationDecision.navigate;
+          },
+          onPageFinished: (String url) {
+            print('Page finished loading: $url');
+          },
+        );
+      }),
+      floatingActionButton: favoriteButton(),
+    );
+  }
+
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
+  }
+
+  Widget favoriteButton() {
+    return FutureBuilder<WebViewController>(
+        future: _controller.future,
+        builder: (BuildContext context,
+            AsyncSnapshot<WebViewController> controller) {
+          if (controller.hasData) {
+            return FloatingActionButton(
+              onPressed: () async {
+                final String url = await controller.data.currentUrl();
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(content: Text('Favorited $url')),
+                );
+              },
+              child: const Icon(Icons.favorite),
+            );
+          }
+          return Container();
+        });
+  }
+}
+
+enum MenuOptions {
+  showUserAgent,
+  listCookies,
+  clearCookies,
+  addToCache,
+  listCache,
+  clearCache,
+  navigationDelegate,
+}
+
+class SampleMenu extends StatelessWidget {
+  SampleMenu(this.controller);
+
+  final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<WebViewController>(
+      future: controller,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+        return PopupMenuButton<MenuOptions>(
+          onSelected: (MenuOptions value) {
+            switch (value) {
+              case MenuOptions.showUserAgent:
+                _onShowUserAgent(controller.data, context);
+                break;
+              case MenuOptions.listCookies:
+                _onListCookies(controller.data, context);
+                break;
+              case MenuOptions.clearCookies:
+                _onClearCookies(context);
+                break;
+              case MenuOptions.addToCache:
+                _onAddToCache(controller.data, context);
+                break;
+              case MenuOptions.listCache:
+                _onListCache(controller.data, context);
+                break;
+              case MenuOptions.clearCache:
+                _onClearCache(controller.data, context);
+                break;
+              case MenuOptions.navigationDelegate:
+                _onNavigationDelegateExample(controller.data, context);
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
+            PopupMenuItem<MenuOptions>(
+              value: MenuOptions.showUserAgent,
+              child: const Text('Show user agent'),
+              enabled: controller.hasData,
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCookies,
+              child: Text('List cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCookies,
+              child: Text('Clear cookies'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.addToCache,
+              child: Text('Add to cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.listCache,
+              child: Text('List cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.clearCache,
+              child: Text('Clear cache'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.navigationDelegate,
+              child: Text('Navigation Delegate example'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onShowUserAgent(
+      WebViewController controller, BuildContext context) async {
+    // Send a message with the user agent string to the Toaster JavaScript channel we registered
+    // with the WebView.
+    controller.evaluateJavascript(
+        'Toaster.postMessage("User Agent: " + navigator.userAgent);');
+  }
+
+  void _onListCookies(
+      WebViewController controller, BuildContext context) async {
+    final String cookies =
+        await controller.evaluateJavascript('document.cookie');
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Text('Cookies:'),
+          _getCookieList(cookies),
+        ],
+      ),
+    ));
+  }
+
+  void _onAddToCache(WebViewController controller, BuildContext context) async {
+    await controller.evaluateJavascript(
+        'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
+    Scaffold.of(context).showSnackBar(const SnackBar(
+      content: Text('Added a test entry to cache.'),
+    ));
+  }
+
+  void _onListCache(WebViewController controller, BuildContext context) async {
+    await controller.evaluateJavascript('caches.keys()'
+        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
+        '.then((caches) => Toaster.postMessage(caches))');
+  }
+
+  void _onClearCache(WebViewController controller, BuildContext context) async {
+    await controller.clearCache();
+    Scaffold.of(context).showSnackBar(const SnackBar(
+      content: Text("Cache cleared."),
+    ));
+  }
+
+  void _onClearCookies(BuildContext context) async {
+    final bool hadCookies = await cookieManager.clearCookies();
+    String message = 'There were cookies. Now, they are gone!';
+    if (!hadCookies) {
+      message = 'There are no cookies.';
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
+  }
+
+  void _onNavigationDelegateExample(
+      WebViewController controller, BuildContext context) async {
+    final String contentBase64 =
+        base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+    controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  Widget _getCookieList(String cookies) {
+    if (cookies == null || cookies == '""') {
+      return Container();
+    }
+    final List<String> cookieList = cookies.split(';');
+    final Iterable<Text> cookieWidgets =
+        cookieList.map((String cookie) => Text(cookie));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: cookieWidgets.toList(),
     );
   }
 }
 
-final authorizationEndpoint =
-    Uri.parse("https://api.imgur.com/oauth2/authorize");
-final tokenEndpoint =
-    Uri.parse("https://api.imgur.com/oauth2/token");
+class NavigationControls extends StatelessWidget {
+  const NavigationControls(this._webViewControllerFuture)
+      : assert(_webViewControllerFuture != null);
 
-// The authorization server will issue each client a separate client
-// identifier and secret, which allows the server to tell which client
-// is accessing it. Some servers may also have an anonymous
-// identifier/secret pair that any client may use.
-//
-// Note that clients whose source code or binary executable is readily
-// available may not be able to make sure the client secret is kept a
-// secret. This is fine; OAuth2 servers generally won't rely on knowing
-// with certainty that a client is who it claims to be.
-final identifier = "ca42024bf4b47ff";
-final secret = "3688f84bd14578f16f3848bdd8fef68385df0a3e";
+  final Future<WebViewController> _webViewControllerFuture;
 
-// This is a URL on your application's server. The authorization server
-// will redirect the resource owner here once they've authorized the
-// client. The redirection will include the authorization code in the
-// query parameters.
-final redirectUrl = Uri.parse("https://www.getpostman.com/oauth2/callback");
-
-/// A file in which the users credentials are stored persistently. If the server
-/// issues a refresh token allowing the client to refresh outdated credentials,
-/// these may be valid indefinitely, meaning the user never has to
-/// re-authenticate.
-final credentialsFile = new File("~/credentials.json");
-
-/// Either load an OAuth2 client from saved credentials or authenticate a new
-/// one.
-Future<oauth2.Client> getClient() async {
-  var exists = await credentialsFile.exists();
-
-  // If the OAuth2 credentials have already been saved from a previous run, we
-  // just want to reload them.
-  if (exists) {
-    var credentials = new oauth2.Credentials.fromJson(
-        await credentialsFile.readAsString());
-    return new oauth2.Client(credentials,
-        identifier: identifier, secret: secret);
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<WebViewController>(
+      future: _webViewControllerFuture,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
+        final bool webViewReady =
+            snapshot.connectionState == ConnectionState.done;
+        final WebViewController controller = snapshot.data;
+        return Row(
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: !webViewReady
+                  ? null
+                  : () async {
+                      if (await controller.canGoBack()) {
+                        controller.goBack();
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(content: Text("No back history item")),
+                        );
+                        return;
+                      }
+                    },
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_forward_ios),
+              onPressed: !webViewReady
+                  ? null
+                  : () async {
+                      if (await controller.canGoForward()) {
+                        controller.goForward();
+                      } else {
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("No forward history item")),
+                        );
+                        return;
+                      }
+                    },
+            ),
+            IconButton(
+              icon: const Icon(Icons.replay),
+              onPressed: !webViewReady
+                  ? null
+                  : () {
+                      controller.reload();
+                    },
+            ),
+          ],
+        );
+      },
+    );
   }
-
-  // If we don't have OAuth2 credentials yet, we need to get the resource owner
-  // to authorize us. We're assuming here that we're a command-line application.
-  var grant = new oauth2.AuthorizationCodeGrant(
-      identifier, authorizationEndpoint, tokenEndpoint,
-      secret: secret);
-
-  // Redirect the resource owner to the authorization URL. This will be a URL on
-  // the authorization server (authorizationEndpoint with some additional query
-  // parameters). Once the resource owner has authorized, they'll be redirected
-  // to `redirectUrl` with an authorization code.
-  //
-  // `redirect` is an imaginary function that redirects the resource
-  // owner's browser.
-  await redirect(grant.getAuthorizationUrl(redirectUrl));
-  
-  // Another imaginary function that listens for a request to `redirectUrl`.
-  var request = await listen(redirectUrl);
-
-  // Once the user is redirected to `redirectUrl`, pass the query parameters to
-  // the AuthorizationCodeGrant. It will validate them and extract the
-  // authorization code to create a new Client.
-  return await grant.handleAuthorizationResponse(request.uri.queryParameters);
-}
-
-
-void doSomeAction() async {
-
-  // produces a request object
-  var request = await HttpClient().getUrl(Uri.parse('https://api.imgur.com/oauth2/authorize?client_id=ca42024bf4b47ff&response_type=token'));  // sends the request
-  var response = await request.close(); 
-
-  // transforms and prints the response
-  await for (var contents in response.transform(Utf8Decoder())) {
-    print(contents);
-  }
-  // Present the dialog to the user
-  // print("totoo");
-  // 
-  // final result = await FlutterWebAuth.authenticate(url: 'https://api.imgur.com/oauth2/authorize?client_id=ca42024bf4b47ff&response_type=token', callbackUrlScheme: "getpostman");
-  // print("tata");
-  // Extract token from resulting url
-  // final token = Uri.parse(result).queryParameters['token'];
-// "https://app.getpostman.com/oauth2/callback#access_token=ca8be478cca86177b6b5cba3140d9be68bc27e05&expires_in=315360000&token_type=bearer&refresh_token=6a5dc2f48f7fc31bb38eb89c9a7424b7e58067a0&account_username=Nilexplr&account_id=115000203"
-// 
-  // print("hello");
-  // print(token);
 }
