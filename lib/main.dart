@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:epicture/login.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:webview_flutter/webview_flutter.dart';
 
-void main() => runApp(MaterialApp(home: WebViewExample()));
-
+void main() => runApp(MyApp());
+/*
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
 <head><title>Navigation Delegate Example</title></head>
@@ -325,4 +326,4 @@ class NavigationControls extends StatelessWidget {
       },
     );
   }
-}
+}*/
