@@ -14,7 +14,7 @@ Pour ce faire, nous avons choisis d'utiliser le framework flutter pour notre app
 
   Nous avons choisis ce framework car il est à la pointe des technologies mobile. c’est un framework sortie il y a un peu plus d’un ans, développé par google en dart. Grâce à son fonctionnement par widget nous avons une application optimisée et un framework adapté à notre problématique.
   
-    Cela nous a permit de tester une technologie nouvelle et émergente. Le fait que flutter soit cross-platform a beaucoup jouer dans le choix de cette technologie. En effet de plus en plus d’application sont développés en cross-platform car cela permet de diminuer les coût de développement et d'avoir une simultanéité entre IOS et Android. D’autant plus que le principal point négatif du cross-platform est le faits de ne pas pouvoir utiliser les fonctions des appareils au maximum alors que notre solution n’utilise quasiment pas de fonctionnalités de l'appareil et donc cela n'était pas une contrainte.
+   Cela nous a permit de tester une technologie nouvelle et émergente. Le fait que flutter soit cross-platform a beaucoup jouer dans le choix de cette technologie. En effet de plus en plus d’application sont développés en cross-platform car cela permet de diminuer les coût de développement et d'avoir une simultanéité entre IOS et Android. D’autant plus que le principal point négatif du cross-platform est le faits de ne pas pouvoir utiliser les fonctions des appareils au maximum alors que notre solution n’utilise quasiment pas de fonctionnalités de l'appareil et donc cela n'était pas une contrainte.
     
 ## Pourquoi ces choix d'UX/UI ?
 
