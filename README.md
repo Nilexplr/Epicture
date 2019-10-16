@@ -13,4 +13,9 @@ Pour ce faire, nous avons choisis d'utiliser le framework flutter pour notre app
 ## Pourquoi flutter ?
 
   Nous avons choisis ce framework car il est à la pointe des technologies mobile. c’est un framework sortie il y a un peu plus d’un ans, développé par google en dart. Grâce à son fonctionnement par widget nous avons une application optimisée et un framework adapté à notre problématique.
+  
     Cela nous a permit de tester une technologie nouvelle et émergente. Le fait que flutter soit cross-platform a beaucoup jouer dans le choix de cette technologie. En effet de plus en plus d’application sont développés en cross-platform car cela permet de diminuer les coût de développement et d'avoir une simultanéité entre IOS et Android. D’autant plus que le principal point négatif du cross-platform est le faits de ne pas pouvoir utiliser les fonctions des appareils au maximum alors que notre solution n’utilise quasiment pas de fonctionnalités de l'appareil et donc cela n'était pas une contrainte.
+    
+## Pourquoi ces choix d'UX/UI ?
+
+Pour l'application, nous avons décidé de garder une UX que l'utilisateur connait et qui corresponds aux tendances actuelles du digital, comme les boutons arrondis, les flat icones. Pour les boutons des favoris une icône étoile. Pour la création de post, l'utilisateur n'est pas perdu car c'est le même processus sur Imgur. Pour conclure l'UX reste très proche de celle de imgur étant une application qui en découle mais offre surtout une nouvelle expérience de design grâce au Polaroïd.
