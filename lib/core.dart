@@ -5,23 +5,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:epicture/pages/profile.dart';
 import 'package:epicture/const.dart';
-import 'package:epicture/login.dart';
+import 'package:epicture/imgur.dart';
 
 // void main() => runApp(MyApp());
 
 class MainScreen extends StatefulWidget {
-  final String currentUserId;
+  final Imgur wrapper;
 
-  MainScreen({Key key, @required this.currentUserId}) : super(key: key);
+  MainScreen({Key key, @required this.wrapper}) : super(key: key);
 
   @override
-  State createState() => MainScreenState(currentUserId: currentUserId);
+  State createState() => MainScreenState(wrapper: wrapper);
 }
 
 class MainScreenState extends State<MainScreen> {
-  MainScreenState({Key key, @required this.currentUserId});
+  MainScreenState({Key key, @required this.wrapper});
 
-  final String currentUserId;
+  final Imgur wrapper;
   
   int _selectedIndex = 0;
 
@@ -34,7 +34,7 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      Profile()
+      Profile(wrapper: wrapper)
       //here the list of possible body
     ];
     return Scaffold(

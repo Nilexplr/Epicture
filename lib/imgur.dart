@@ -244,7 +244,7 @@ class LoginScreenState extends State<LoginScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => MainScreen(currentUserId: 'id'),
+                builder: (context) => MainScreen(wrapper: wrapper),
               )
             );
           },
