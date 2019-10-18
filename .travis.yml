@@ -1,9 +1,11 @@
 language: dart
 
-sudo: require
+sudo: required
 
 service:
   - docker
+
+dist: xenial
 
 git:
   depth: false
@@ -27,7 +29,25 @@ jobs:
         script: bash ci/deploy.sh
         on:
           branch: master
+    
+    - stage: test
+      script:
+        - flutter/bin/flutter pub get
+        - flutter/bin/flutter clean
+        - flutter/bin/flutter test --coverage
 
 stages:
   - name: deploy
     if: branch = master
+
+addons:
+  apt:
+    packages:
+      - lib32stdc++6
+install:
+  - git clone https://github.com/flutter/flutter.git -b beta
+  - ./flutter/bin/flutter doctor
+
+# cache:
+#   directories:
+#     - $HOME/.pub-cache
