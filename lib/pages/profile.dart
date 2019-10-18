@@ -37,9 +37,29 @@ class _Profile extends State<Profile> {
       });
     });
 
-    return Center(
-      child: Stack(
-        children: listImage,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.image)),
+              Tab(icon: Icon(Icons.star)),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            GridView.extent(
+              maxCrossAxisExtent: 150,
+              padding: const EdgeInsets.all(4),
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              children: listImage,
+            ),
+            Text('favorite is comming')
+          ],
+        ),
       ),
     );
   }
@@ -61,6 +81,7 @@ List<Widget> buildList(List<String> list) {
         imageUrl: link,
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) => Icon(Icons.error),
+        fit: BoxFit.fill,
       )
     );
   });
