@@ -145,6 +145,12 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
+  Future<ImgurResponse> accountFavorites(int page, bool sort) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${_myUser.accountUsername}/favorites'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
   /*********************
   ** COMMENT REQUEST ***
   *********************/
@@ -245,6 +251,9 @@ class LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  static bool end = false;
+
+
   @override
   Widget build(BuildContext context) {
     setState(() {
@@ -266,26 +275,28 @@ class LoginScreenState extends State<LoginScreen> {
             _toasterJavascriptChannel(context),
           ].toSet(),
           navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
           onPageFinished: (String url) {
+            print(url);
             var pos = url.indexOf('refresh_token=');
-            String token = url.substring(pos).replaceAll('refresh_token=', '');
-            pos = token.indexOf('&');
-            token = token.substring(0, pos);
-            wrapper.authentificateClient(token);
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MainScreen(wrapper: wrapper),
-              )
-            );
+            if (pos != -1 && !end) {
+              end = true;
+              String token = url.substring(pos).replaceAll('refresh_token=', '');
+              pos = token.indexOf('&');
+              token = token.substring(0, pos);
+              print(token);
+              wrapper.authentificateClient(token).whenComplete(() {
+                print("test !");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(wrapper: wrapper),
+                  )
+                );
+              });
+            }
           },
         );
       }),
