@@ -16,52 +16,94 @@ class Profile extends StatefulWidget {
 class _Profile extends State<Profile> {
   final Imgur wrapper;
   List<Widget> listImage = [Text('loading...')];
+  List<Widget> listFav = [Text('loading...')];
 
   _Profile({Key key, @required this.wrapper});
 
-  @override
-  Widget build(BuildContext context) {
-    var img = wrapper.accountImage();
+  bool isLoading = true;
+  bool doNotSkip = true;
+
+  void _buildImageList() {
+    img = wrapper.accountImage();
     List<String> list = new List();
-    setState(() {
-      img.then((Map<String, dynamic> map) {
-        map.forEach((String str, dynamic info) {
-          if (str == "data") {
-            List<dynamic> tmp = info;
-            tmp.forEach((dynamic value) {
-              list.add(value['link']);
-            });
-          }
-        });
+    img.then((ImgurResponse obj) {
+      dynamic tmp = obj.data;
+      print(tmp);
+      tmp.forEach((dynamic value) {
+        list.add(value['link']);
+      });
+      setState(() {
         listImage = buildList(list);
+        isLoading = false;
+        doNotSkip = false;
       });
     });
+  }
+  void _buildFavList() {
+    img = wrapper.accountGalleryFavorites(0, true);
+    List<String> list = new List();
+    img.then((ImgurResponse obj) {
+      dynamic tmp = obj.data;
+      print(tmp);
+      tmp.forEach((dynamic gallery) {
+        gallery['images'].forEach((dynamic value) {
+          list.add(value['link']);
+        });
+      });
+      setState(() {
+        listFav = buildList(list);
+        doNotSkip = false;
+      });
+    });
+  }
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.image)),
-              Tab(icon: Icon(Icons.star)),
+  var img;
+
+  @override
+  Widget build(BuildContext context) {
+    print('########################## --------------- HELLO -------------- ########################');
+    if (doNotSkip) {
+      _buildImageList();
+      _buildFavList();
+    }
+
+    if (isLoading) {
+      return Center(
+        child: Text('Loading...'),
+      );
+    } else {
+      return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.image)),
+                Tab(icon: Icon(Icons.star)),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              GridView.extent(
+                maxCrossAxisExtent: 150,
+                padding: const EdgeInsets.all(4),
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                children: listImage,
+              ),
+              GridView.extent(
+                maxCrossAxisExtent: 150,
+                padding: const EdgeInsets.all(4),
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                children: listFav,
+              ),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            GridView.extent(
-              maxCrossAxisExtent: 150,
-              padding: const EdgeInsets.all(4),
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              children: listImage,
-            ),
-            Text('favorite is comming')
-          ],
-        ),
-      ),
-    );
+      );
+    }
   }
 }
 
@@ -73,8 +115,10 @@ List<Widget> buildList(List<String> list) {
     return widList;
   }
   print(list);
-  list.forEach((String link) {
+  print("TOTO");
+  list.forEach((dynamic link) {
     print(link);
+    try {
     widList.add(
       // Text(link)
       CachedNetworkImage(
@@ -84,6 +128,23 @@ List<Widget> buildList(List<String> list) {
         fit: BoxFit.fill,
       )
     );
+    } catch(e) {
+      try {
+        link.forEach((String lk) {
+          widList.add(
+            // Text(link)
+            CachedNetworkImage(
+              imageUrl: lk,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              fit: BoxFit.fill,
+            )
+          );
+        });
+      } catch(e) {
+        print(e);
+      }
+    }
   });
   return widList;
 }
