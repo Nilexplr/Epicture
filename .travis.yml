@@ -29,6 +29,12 @@ jobs:
         script: bash ci/deploy.sh
         on:
           branch: master
+    
+    - stage: test
+      script:
+        - flutter/bin/flutter pub get
+        - flutter/bin/flutter clean
+        - flutter/bin/flutter test --coverage
 
 stages:
   - name: deploy
@@ -42,9 +48,6 @@ install:
   - git clone https://github.com/flutter/flutter.git -b beta
   - ./flutter/bin/flutter doctor
 
-# script:
-#   - cd app
-#   - ../flutter/bin/flutter test
-cache:
-  directories:
-    - $HOME/.pub-cache
+# cache:
+#   directories:
+#     - $HOME/.pub-cache

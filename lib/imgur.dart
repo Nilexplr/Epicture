@@ -2,9 +2,9 @@ import 'package:epicture/core.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 
 class ImgurResponse {
   var data;
@@ -42,7 +42,7 @@ class User {
 class Imgur {
   String _clientId;
   String _clientSecret;
-  User _myUser;
+  User myUser;
 
   Imgur(this._clientId, this._clientSecret);
 
@@ -87,7 +87,7 @@ class Imgur {
       "grant_type": "refresh_token"
     };
     http.Response request = await http.post(Uri.parse("https://api.imgur.com/oauth2/token"), body: body);
-    _myUser = new User(json.decode(request.body));
+    myUser = new User(json.decode(request.body));
   }
 
   /*********************
@@ -96,7 +96,7 @@ class Imgur {
 
   Future<ImgurResponse> accountBase() async {
     http.Response source = await http.get(Uri.parse(
-      'https://api.imgur.com/3/account/${_myUser.accountUsername}'), 
+      'https://api.imgur.com/3/account/${myUser.accountUsername}'), 
       headers: {'Authorization': "Client-ID $_clientId"}
     );
     return ImgurResponse(json.decode(source.body));
@@ -104,21 +104,21 @@ class Imgur {
 
   Future<ImgurResponse> accountBlocks() async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/me/block'),
-      headers: {'Authorization': "Bearer ${_myUser.accessToken}", 'Accept' : "application/vnd.api+json"}
+      headers: {'Authorization': "Bearer ${myUser.accessToken}", 'Accept' : "application/vnd.api+json"}
     );
     return ImgurResponse(json.decode(source.body));
   }
 
   Future<ImgurResponse> accountBlocksCreate() async {
-    http.Response source = await http.post(Uri.parse('https://api.imgur.com/account/v1/${_myUser.accountUsername}/block'),
-      headers: {'Authorization': "Bearer ${_myUser.accessToken}", 'Accept' : "application/vnd.api+json"}
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/account/v1/${myUser.accountUsername}/block'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}", 'Accept' : "application/vnd.api+json"}
     );
     return ImgurResponse(json.decode(source.body));
   }
 
   Future<ImgurResponse> accountSetting() async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/me/settings'),
-      headers: {'Authorization': "Bearer ${_myUser.accessToken}"}
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
     return ImgurResponse(json.decode(source.body));
   }
@@ -126,25 +126,31 @@ class Imgur {
 
   Future<ImgurResponse> accountImage() async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/me/images'),
-      headers: {'Authorization': "Bearer ${_myUser.accessToken}"}
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
     return ImgurResponse(json.decode(source.body));
   }
 
   Future<ImgurResponse> accountAvatar() async {
-    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${_myUser.accountUsername}/avatar'),
-      headers: {'Authorization': "Bearer ${_myUser.accessToken}"}
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${myUser.accountUsername}/avatar'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
     return ImgurResponse(json.decode(source.body));
   }
 
   Future<ImgurResponse> accountGalleryFavorites(int page, bool sort) async {
-    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${_myUser.accountUsername}/gallery_favorites/$page/$sort'),
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${myUser.accountUsername}/gallery_favorites/$page/$sort'),
       headers: {'Authorization': "Client-ID $_clientId"}
     );
     return ImgurResponse(json.decode(source.body));
   }
 
+  Future<ImgurResponse> accountFavorites(int page, bool sort) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${myUser.accountUsername}/favorites'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
   /*********************
   ** COMMENT REQUEST ***
   *********************/
@@ -161,7 +167,7 @@ class Imgur {
   //     "client_secret": _clientSecret,
   //     "grant_type": "refresh_token"
   //   };
-  //   http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/comment'), headers: {'Authorization': "Bearer ${_myUser.accessToken}"});
+  //   http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/comment'), headers: {'Authorization': "Bearer ${myUser.accessToken}"});
   //   return ImgurResponse(json.decode(source.body));
   // }
 
@@ -245,6 +251,9 @@ class LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  static bool end = false;
+
+
   @override
   Widget build(BuildContext context) {
     setState(() {
@@ -266,26 +275,28 @@ class LoginScreenState extends State<LoginScreen> {
             _toasterJavascriptChannel(context),
           ].toSet(),
           navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
           onPageFinished: (String url) {
+            print(url);
             var pos = url.indexOf('refresh_token=');
-            String token = url.substring(pos).replaceAll('refresh_token=', '');
-            pos = token.indexOf('&');
-            token = token.substring(0, pos);
-            wrapper.authentificateClient(token);
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MainScreen(wrapper: wrapper),
-              )
-            );
+            if (pos != -1 && !end) {
+              end = true;
+              String token = url.substring(pos).replaceAll('refresh_token=', '');
+              pos = token.indexOf('&');
+              token = token.substring(0, pos);
+              print(token);
+              wrapper.authentificateClient(token).whenComplete(() {
+                print("test !");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(wrapper: wrapper),
+                  )
+                );
+              });
+            }
           },
         );
       }),
