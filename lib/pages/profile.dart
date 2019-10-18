@@ -25,17 +25,12 @@ class _Profile extends State<Profile> {
   void _buildImageList() {
     img = wrapper.accountImage();
     List<String> list = new List();
-    setState(() {
-      img.then((ImgurResponse test) {
-        Map<String, dynamic> map = test.data;
-        map.forEach((String str, dynamic info) {
-          if (str == "data") {
-            List<dynamic> tmp = info;
-            tmp.forEach((dynamic value) {
-              list.add(value['link']);
-            });
-          }
-        });
+    img.then((ImgurResponse obj) {
+      dynamic tmp = obj.data;
+      tmp.forEach((dynamic value) {
+        list.add(value['link']);
+      });
+      setState(() {
         listImage = buildList(list);
         isLoading = false;
         doNotSkip = false;
