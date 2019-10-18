@@ -146,7 +146,7 @@ class Imgur {
   }
 
   Future<ImgurResponse> accountFavorites(int page, bool sort) async {
-    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${_myUser.accountUsername}/favorites'),
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${myUser.accountUsername}/favorites'),
       headers: {'Authorization': "Client-ID $_clientId"}
     );
     return ImgurResponse(json.decode(source.body));
