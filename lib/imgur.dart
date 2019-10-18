@@ -125,7 +125,6 @@ class Imgur {
 
 
   Future<ImgurResponse> accountImage() async {
-    print("merci tu khalass");
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/me/images'),
       headers: {'Authorization': "Bearer ${_myUser.accessToken}"}
     );

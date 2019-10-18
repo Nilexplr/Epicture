@@ -7,8 +7,6 @@ import 'package:epicture/pages/profile.dart';
 import 'package:epicture/const.dart';
 import 'package:epicture/imgur.dart';
 
-// void main() => runApp(MyApp());
-
 class MainScreen extends StatefulWidget {
   final Imgur wrapper;
 

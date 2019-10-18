@@ -28,7 +28,6 @@ class _Profile extends State<Profile> {
     List<String> list = new List();
     img.then((ImgurResponse obj) {
       dynamic tmp = obj.data;
-      print(tmp);
       tmp.forEach((dynamic value) {
         list.add(value['link']);
       });
@@ -44,7 +43,6 @@ class _Profile extends State<Profile> {
     List<String> list = new List();
     img.then((ImgurResponse obj) {
       dynamic tmp = obj.data;
-      print(tmp);
       tmp.forEach((dynamic gallery) {
         gallery['images'].forEach((dynamic value) {
           list.add(value['link']);
@@ -61,7 +59,6 @@ class _Profile extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    print('########################## --------------- HELLO -------------- ########################');
     if (doNotSkip) {
       _buildImageList();
       _buildFavList();
@@ -114,10 +111,7 @@ List<Widget> buildList(List<String> list) {
     widList.add(Text('Oups.. Vous n\'avez pas encore de contenus'));
     return widList;
   }
-  print(list);
-  print("TOTO");
   list.forEach((dynamic link) {
-    print(link);
     try {
     widList.add(
       // Text(link)
