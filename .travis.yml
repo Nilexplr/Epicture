@@ -32,8 +32,8 @@ jobs:
     
     - stage: test
       script:
-        - flutter/bin/flutter clean
         - flutter/bin/flutter pub get
+        - flutter/bin/flutter clean
         - flutter/bin/flutter test --coverage
 
 stages:
