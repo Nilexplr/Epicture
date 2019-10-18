@@ -230,7 +230,7 @@ class LoginScreen extends StatefulWidget {
   LoginScreen(this.wrapper, {Key key, this.title}) : super(key: key);
 
   final String title;
-  Imgur wrapper;
+  final Imgur wrapper;
 
   @override
   LoginScreenState createState() => LoginScreenState(wrapper);

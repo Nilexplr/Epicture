@@ -119,7 +119,7 @@ List<Widget> buildList(List<String> list) {
         imageUrl: link,
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) => Icon(Icons.error),
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
       )
     );
     } catch(e) {
