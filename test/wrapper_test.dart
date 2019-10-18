@@ -5,10 +5,8 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:epicture/imgur.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:epicture/main.dart';
 
 void main() {
   group("imgur connection", () {
@@ -31,7 +29,6 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.accountAvatar();
-        print(toto.success);
         expect(toto.success, true);
       });
 
@@ -41,7 +38,6 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.accountBase();
-        print(toto.success);
         expect(toto.success, true);
       });
       test("Test block", () async {
@@ -50,7 +46,6 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.accountBlocks();
-        print(toto.success);
         expect(toto.success, true);
       });
       test("Test setting", () async {
@@ -59,7 +54,6 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.accountSetting();
-        print(toto.success);
         expect(toto.success, true);
       });
       test("Test setting", () async {
@@ -68,7 +62,6 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.accountGalleryFavorites(0, true);
-        print(toto.success);
         expect(toto.success, true);
       });
     });
