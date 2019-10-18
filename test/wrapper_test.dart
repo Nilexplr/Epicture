@@ -16,9 +16,7 @@ void main() {
       );
       await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
       expect(img.myUser.accountId, 115858719);
-      expect(img.myUser.accessToken, "5828b01b9d8e658f90269a1b9a6ce359cab79495");
       expect(img.myUser.accountUsername, "epitest95");
-      expect(img.myUser.refreshToken, "8ecc4ea72c70ed2f2b8c985444e30683291fc9d2");
       expect(img.myUser.tokenType, "bearer");   
     });
 
