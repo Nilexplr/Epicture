@@ -32,8 +32,8 @@ jobs:
     
     - stage: test
       script:
-        - flutter clean
-        - flutter test --coverage
+        - flutter/bin/flutter clean
+        - flutter/bin/flutter test --coverage
 
 stages:
   - name: deploy
