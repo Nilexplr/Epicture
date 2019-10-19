@@ -241,7 +241,7 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
-  Future<ImgurResponse> searchGalleryByTag(String tag, {
+  Future<ImgurResponse> searchGallery(String tag, {
     int page = 0,
     String window = "day", /// day | week | month | year | all
     String sort = 'viral', /// viral | top | time | rising
@@ -266,6 +266,14 @@ class Imgur {
   Future<ImgurResponse> favorite(String imageHash) async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
       headers: {'Authorization': "Bearer ${myUser.accessToken}"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> uploadImage(String imageHash, String title) async {
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/upload'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"},
+      body: {"image" : imageHash, "title":title}
     );
     return ImgurResponse(json.decode(source.body));
   }
