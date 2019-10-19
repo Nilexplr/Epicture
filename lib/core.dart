@@ -7,7 +7,7 @@ import 'package:epicture/pages/search.dart';
 import 'package:flutter/material.dart';
 import 'package:epicture/pages/profile.dart';
 import 'package:epicture/const.dart';
-import 'package:epicture/imgur.dart';
+import 'package:epicture/API/imgur.dart';
 
 class MainScreen extends StatefulWidget {
   final Imgur wrapper;

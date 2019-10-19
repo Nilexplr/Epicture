@@ -1,4 +1,4 @@
-import 'package:epicture/imgur.dart';
+import 'package:epicture/API/imgur.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -81,7 +81,6 @@ void main() {
         expect(toto.success, true);
       });
     });
-
     group("album", () {
       test("Test get Album", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
@@ -91,7 +90,6 @@ void main() {
         var toto = await img.getAlbum('tynSLHI');
         expect(toto.success, true);
       });
-
       test("Test get images of album", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
@@ -100,7 +98,6 @@ void main() {
         var toto = await img.albumImages('tynSLHI');
         expect(toto.success, true);
       });
-
       test("Test get an image in an album", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
@@ -110,7 +107,6 @@ void main() {
         expect(toto.success, true);
       });
     });
-
     group("Gallery request", () {
       test("Test get Gallery", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
@@ -153,9 +149,6 @@ void main() {
         expect(toto.success, true);
       });
     });
-
-
-
     group("Image request", () {
       test("Test get Image", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
@@ -182,5 +175,8 @@ void main() {
         expect(toto.success, true);
       });
     });
+  });
+  group('imgur bouton', () {
+
   });
 }
