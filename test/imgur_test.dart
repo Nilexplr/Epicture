@@ -172,8 +172,7 @@ void main() {
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
-        var toto = await img.uploadImage(img.transformFileImage(File("/home/nicolas/Images/test.png")), "");
-        print(toto.success);
+        var toto = await img.uploadImage(img.transformFileImage(File("./test/galaxy.jpg")), "");
         expect(toto.success, true);
       });
     });
