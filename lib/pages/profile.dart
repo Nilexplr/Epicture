@@ -38,8 +38,9 @@ class _Profile extends State<Profile> {
       });
     });
   }
+
   void _buildFavList(BuildContext context) {
-    img = wrapper.accountGalleryFavorites(0, true);
+    img = wrapper.accountGalleryFavorites();
     List<Map<String, dynamic>> list = new List();
     img.then((ImgurResponse obj) {
       dynamic tmp = obj.data;
