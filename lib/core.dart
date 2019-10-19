@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:epicture/pages/search.dart';
 import 'package:flutter/material.dart';
 import 'package:epicture/pages/profile.dart';
 import 'package:epicture/const.dart';
@@ -32,11 +34,25 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      Profile(wrapper: wrapper)
+      Profile(wrapper: wrapper),
+      Search(wrapper: wrapper)
       //here the list of possible body
     ];
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.1, 0.9],
+            colors: [
+              Color(0xff212121),
+              Color(0xff656565),
+            ]
+          )
+        ),
+        child: _widgetOptions.elementAt(_selectedIndex)
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xFF299DE6),
         unselectedItemColor: Colors.white,
