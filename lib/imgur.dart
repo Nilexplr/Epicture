@@ -109,12 +109,12 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
-  Future<ImgurResponse> accountBlocksCreate() async {
-    http.Response source = await http.post(Uri.parse('https://api.imgur.com/account/v1/${myUser.accountUsername}/block'),
-      headers: {'Authorization': "Bearer ${myUser.accessToken}", 'Accept' : "application/vnd.api+json"}
-    );
-    return ImgurResponse(json.decode(source.body));
-  }
+  // Future<ImgurResponse> accountBlocksCreate() async {
+  //   http.Response source = await http.post(Uri.parse('https://api.imgur.com/account/v1/${myUser.accountUsername}/block'),
+  //     headers: {'Authorization': "Bearer ${myUser.accessToken}", 'Accept' : "application/vnd.api+json"}
+  //   );
+  //   return ImgurResponse(json.decode(source.body));
+  // }
 
   Future<ImgurResponse> accountSetting() async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/me/settings'),
@@ -138,14 +138,14 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
-  Future<ImgurResponse> accountGalleryFavorites(int page, bool sort) async {
+  Future<ImgurResponse> accountGalleryFavorites({int page = 0, bool sort = true}) async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${myUser.accountUsername}/gallery_favorites/$page/$sort'),
       headers: {'Authorization': "Client-ID $_clientId"}
     );
     return ImgurResponse(json.decode(source.body));
   }
 
-  Future<ImgurResponse> accountFavorites(int page, bool sort) async {
+  Future<ImgurResponse> accountFavorites({int page = 0, bool sort = true}) async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/account/${myUser.accountUsername}/favorites'),
       headers: {'Authorization': "Client-ID $_clientId"}
     );
@@ -200,7 +200,16 @@ class Imgur {
   ** GALLERY REQUEST ***
   *********************/
 
-  Future<ImgurResponse> getGallery(String section, int window, int page, bool sort, bool showViral, bool mature, bool albumPreviews) async {
+  Future<ImgurResponse> getGallery({
+      String section = "hot", /// hot | top | user
+      String window = "day", /// day | week | month | year | all
+      String sort = 'viral', /// viral | top | time | rising
+      int page = 0,
+      bool showViral = true,
+      bool mature = true,
+      bool albumPreviews = true
+      }) async {
+
     http.Response source = await http.get(Uri.parse(
       'https://api.imgur.com/3/gallery/$section/$sort/$window/$page?showViral=$showViral&mature=$mature&album_previews=$albumPreviews'),
       headers: {'Authorization': "Client-ID $_clientId"});
@@ -209,6 +218,35 @@ class Imgur {
 
   Future<ImgurResponse> getGalleryAlbum(String galleryHash) async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/album/$galleryHash'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> getTags() async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/tags'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> getGalleryByTag(String tag, {
+    int page = 0,
+    String window = "day", /// day | week | month | year | all
+    String sort = 'viral', /// viral | top | time | rising
+  }) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/t/$tag/$sort/$window/$page'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> searchGallery(String tag, {
+    int page = 0,
+    String window = "day", /// day | week | month | year | all
+    String sort = 'viral', /// viral | top | time | rising
+  }) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/search/$sort/$window/$page?q=$tag'),
       headers: {'Authorization': "Client-ID $_clientId"}
     );
     return ImgurResponse(json.decode(source.body));
@@ -224,13 +262,28 @@ class Imgur {
     );
     return ImgurResponse(json.decode(source.body));
   }
+
+  Future<ImgurResponse> favorite(String imageHash) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> uploadImage(String imageHash, String title) async {
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/upload'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"},
+      body: {"image" : imageHash, "title":title}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
 }
 
 class LoginScreen extends StatefulWidget {
   LoginScreen(this.wrapper, {Key key, this.title}) : super(key: key);
 
   final String title;
-  Imgur wrapper;
+  final Imgur wrapper;
 
   @override
   LoginScreenState createState() => LoginScreenState(wrapper);
