@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:epicture/pages/addPicture.dart';
 import 'package:epicture/pages/search.dart';
 import 'package:flutter/material.dart';
 import 'package:epicture/pages/profile.dart';
@@ -35,7 +36,8 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
       Profile(wrapper: wrapper),
-      Search(wrapper: wrapper)
+      Search(wrapper: wrapper),
+      AddPicture(wrapper: wrapper),
       //here the list of possible body
     ];
     return Scaffold(
@@ -79,6 +81,7 @@ class MainScreenState extends State<MainScreen> {
           ),
         ],
         selectedItemColor: Colors.white,
+
         onTap: onItemTap,
       ),
     );
