@@ -43,9 +43,15 @@ class _Profile extends State<Profile> {
     img.then((ImgurResponse obj) {
       dynamic tmp = obj.data;
       tmp.forEach((dynamic gallery) {
-        gallery['images'].forEach((dynamic value) {
-          list.add(value['link']);
-        });
+        if (gallery != null) {
+          if (gallery['images'] != null) {
+            gallery['images'].forEach((dynamic value) {
+              list.add(value['link']);
+            });
+          } else {
+            list.add(gallery['link']);
+          }
+        }
       });
       setState(() {
         listFav = buildList(list);
@@ -107,11 +113,10 @@ List<Widget> buildList(List<String> list) {
   List<Widget> widList = new List<Widget>();
   
   if (list == null) {
-    widList.add(Text('Oups.. Vous n\'avez pas encore de contenus'));
+    widList.add(Center(child: Text('Oups.. Vous n\'avez pas encore de contenus')));
     return widList;
   }
   list.forEach((dynamic link) {
-    try {
     widList.add(
       // Text(link)
       CachedNetworkImage(
@@ -121,23 +126,6 @@ List<Widget> buildList(List<String> list) {
         fit: BoxFit.fill,
       )
     );
-    } catch(e) {
-      try {
-        link.forEach((String lk) {
-          widList.add(
-            // Text(link)
-            CachedNetworkImage(
-              imageUrl: lk,
-              placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-              fit: BoxFit.fill,
-            )
-          );
-        });
-      } catch(e) {
-        print(e);
-      }
-    }
   });
   return widList;
 }
