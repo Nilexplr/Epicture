@@ -93,7 +93,6 @@ class _UploadPicture extends State<UploadPicture> {
                 child: Text('Upload'),
                 textColor: Colors.white,
                 onPressed: name == null ? null : () {
-                  print("hello batard !");
                   files.forEach((File file) async {
                     wrapper.uploadImage(wrapper.transformFileImage(file), name);
                   });

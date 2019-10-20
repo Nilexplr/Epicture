@@ -36,7 +36,7 @@ class _Search extends State<Search> {
 
   void rebuildStatsList() {
     setState(() {
-      _listWidgetDisp = buildList(_listResult, context);
+      _listWidgetDisp = buildList(_listResult, context, wrapper);
     });
   }
 
