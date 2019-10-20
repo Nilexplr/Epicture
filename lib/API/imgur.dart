@@ -287,7 +287,7 @@ class Imgur {
   }
 
   Future<ImgurResponse> favorite(String imageHash) async {
-    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
       headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
     return ImgurResponse(json.decode(source.body));

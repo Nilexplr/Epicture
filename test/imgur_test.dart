@@ -182,6 +182,7 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.favorite("9R3tBRY");
+        print(toto.data);
         expect(toto.success, true);
       });
       test("Test add image", () async {
