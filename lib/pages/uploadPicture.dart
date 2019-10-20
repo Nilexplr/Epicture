@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ class _UploadPicture extends State<UploadPicture> {
   
   final List<File> files;
   final Imgur wrapper;
+
+  String name;
 
   _UploadPicture({Key key, @required this.files, @required this.wrapper});
 
@@ -48,7 +51,7 @@ class _UploadPicture extends State<UploadPicture> {
             Container(
               padding: EdgeInsets.all(10),
               child: TextField(
-                onChanged: (String title) => print(title),
+                onChanged: (String title) => name = title,
                 cursorColor: Colors.green,
                 style: TextStyle(
                   color: Colors.blue,
@@ -89,11 +92,12 @@ class _UploadPicture extends State<UploadPicture> {
                 color: Colors.green[600],
                 child: Text('Upload'),
                 textColor: Colors.white,
-                onPressed: () {
+                onPressed: name == null ? null : () {
                   print("hello batard !");
-                  files.forEach((File file) {
-                    
+                  files.forEach((File file) async {
+                    wrapper.uploadImage(wrapper.transformFileImage(file), name);
                   });
+                  Navigator.pop(context);
                 },
               )
             )
