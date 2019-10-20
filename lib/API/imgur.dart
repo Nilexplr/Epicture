@@ -82,7 +82,7 @@ class Imgur {
     );
   }
 
-  authentificateClient(String refreshToken) async {
+  Future<bool> authentificateClient(String refreshToken) async {
     var body = {
       "refresh_token": refreshToken,
       "client_id": _clientId,
@@ -91,6 +91,8 @@ class Imgur {
     };
     http.Response request = await http.post(Uri.parse("https://api.imgur.com/oauth2/token"), body: body);
     myUser = new User(json.decode(request.body));
+    ImgurResponse response = ImgurResponse(json.decode(request.body));
+    return response.success;
   }
 
   /*********************
