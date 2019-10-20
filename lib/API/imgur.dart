@@ -264,6 +264,22 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
+  Future<ImgurResponse> getVoteGallery(String galleryHash) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/$galleryHash/votes'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> setVoteGallery(String galleryHash, {
+    String vote = 'up', /// up | down | veto
+  }) async {
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/gallery/$galleryHash/vote/$vote'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
   /*********************
   *** IMAGE REQUEST ****
   *********************/
