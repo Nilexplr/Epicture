@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:epicture/imgur.dart';
+import 'package:epicture/API/imgur.dart';
 
 class UploadPicture extends StatefulWidget {
 

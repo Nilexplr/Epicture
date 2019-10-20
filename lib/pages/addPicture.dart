@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:epicture/imgur.dart';
+import 'package:epicture/API/imgur.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:epicture/pages/uploadPicture.dart';
 
