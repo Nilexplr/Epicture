@@ -19,3 +19,17 @@ Pour ce faire, nous avons choisis d'utiliser le framework flutter pour notre app
 ## Pourquoi ces choix d'UX/UI ?
 
 Pour l'application, nous avons décidé de garder une UX que l'utilisateur connait et qui corresponds aux tendances actuelles du digital, comme les boutons arrondis, les flat icones. Pour les boutons des favoris une icône étoile. Pour la création de post, l'utilisateur n'est pas perdu car c'est le même processus sur Imgur. Pour conclure l'UX reste très proche de celle de imgur étant une application qui en découle mais offre surtout une nouvelle expérience de design grâce au Polaroïd.
+
+## Documentations
+
+Des informations complementaire sur le projet github.
+
+## Utilisation
+
+Construire l'apk:
+
+``` flutter build apk ```
+
+Installer via flutter:
+
+``` flutter install ```
