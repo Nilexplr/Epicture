@@ -295,7 +295,6 @@ class Imgur {
     http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
       headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
-    print(json.decode(source.body));
     return ImgurResponse(json.decode(source.body));
   }
 
