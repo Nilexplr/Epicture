@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:epicture/core.dart';
 import 'package:epicture/API/imgur.dart';
+import 'package:epicture/logReadWrite.dart';
 import 'dart:async';
 
 class LoginScreen extends StatefulWidget {
@@ -31,9 +34,12 @@ class LoginScreenState extends State<LoginScreen> {
 
   static bool end = false;
 
+  // final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
+    print("hola");
     setState(() {
       logo = true;
       if (MediaQuery.of(context).viewInsets.bottom != 0) {
@@ -59,14 +65,19 @@ class LoginScreenState extends State<LoginScreen> {
           onPageFinished: (String url) {
             print(url);
             var pos = url.indexOf('refresh_token=');
+            LogRW log = new LogRW();
             if (pos != -1 && !end) {
               end = true;
               String token = url.substring(pos).replaceAll('refresh_token=', '');
               pos = token.indexOf('&');
               token = token.substring(0, pos);
               print(token);
+              log.writeData(token);
+              cookieManager.clearCookies();
+              _controller.future.then((WebViewController ctrl) {
+                ctrl.clearCache();
+              });
               wrapper.authentificateClient(token).whenComplete(() {
-                print("test !");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -90,4 +101,7 @@ class LoginScreenState extends State<LoginScreen> {
           );
         });
   }
+
+
+
 }
