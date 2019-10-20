@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:epicture/API/loginScreen.dart';
+import 'dart:io';
+import 'dart:convert';
 
 class ImgurResponse {
   var data;
@@ -44,10 +46,13 @@ class Imgur {
 
   Imgur(this._clientId, this._clientSecret);
 
+  String transformFileImage(File img) {
+    return base64Encode(img.readAsBytesSync());
+  }
   Widget getButton(BuildContext context) {
 
+
     void LogIn() {
-      print("click");
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -276,4 +281,3 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:epicture/API/imgur.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'dart:io';
 
 void main() {
   group("imgur connection", () {
@@ -171,7 +172,7 @@ void main() {
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
-        var toto = await img.uploadImage("https://www.ablebulgaria.org/wp-content/uploads/bfi_thumb/boss-by-able-logo-1-nu1f3bnu62vz5api4bzx4dtdmvnvvf699f4h6ise60.jpg", "");
+        var toto = await img.uploadImage(img.transformFileImage(File("./test/galaxy.jpg")), "");
         expect(toto.success, true);
       });
     });
