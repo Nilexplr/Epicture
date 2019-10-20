@@ -61,7 +61,19 @@ class _PopupImg extends State<PopupImg> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Icon(Icons.thumb_up, color: Colors.grey[500]),
+                        IconButton(
+                          icon: image['vote'] == 'up' ? Icon(Icons.thumb_up, color: Colors.blue) : Icon(Icons.thumb_up, color: Colors.grey[500]),
+                          onPressed: () {
+                            setState(() {
+                              if (image['vote'] == 'up') {
+                                wrapper.setVoteGallery(image['id'], vote: 'veto');
+                              } else {
+                                wrapper.setVoteGallery(image['id']);
+                              }
+                              image['vote'] = image['vote'] == 'up' ? 'down' : 'up';                           
+                            });
+                          },
+                        ),
                         Text(title),
                         IconButton(
                           icon: image['favorite'] == true ? Icon(Icons.star, color: Colors.yellow[600]) : Icon(Icons.star_border, color: Colors.grey[600]),
