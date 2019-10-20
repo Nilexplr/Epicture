@@ -1,6 +1,7 @@
 import 'package:epicture/API/imgur.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
+import 'package:epicture/API/loginScreen.dart';
 
 void main() {
   group("imgur connection", () {
@@ -172,12 +173,9 @@ void main() {
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
-        var toto = await img.uploadImage(img.transformFileImage(File("./test/galaxy.jpg")), "");
+        var toto = await img.uploadImage(img.transformFileImage(File("./galaxy.jpg")), "test");
         expect(toto.success, true);
       });
     });
-  });
-  group('imgur bouton', () {
-
   });
 }
