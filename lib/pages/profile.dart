@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:epicture/imgur.dart';
+import 'package:epicture/API/imgur.dart';
 import 'package:epicture/pages/popupImg.dart';
 
 class Profile extends StatefulWidget {
@@ -32,7 +32,7 @@ class _Profile extends State<Profile> {
         list.add(value);
       });
       setState(() {
-        listImage = buildList(list, context);
+        listImage = buildList(list, context, wrapper);
         isLoading = false;
         doNotSkip = false;
       });
@@ -48,15 +48,17 @@ class _Profile extends State<Profile> {
         if (gallery != null) {
           if (gallery['images'] != null) {
             gallery['images'].forEach((dynamic value) {
+              value['favorite'] = true;
               list.add(value);
             });
           } else {
+            gallery['favorite'] = true;
             list.add(gallery);
           }
         }
       });
       setState(() {
-        listFav = buildList(list, context);
+        listFav = buildList(list, context, wrapper);
         doNotSkip = false;
       });
     });
@@ -117,7 +119,7 @@ class _Profile extends State<Profile> {
   }
 }
 
-List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context) {
+List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context, Imgur wrapper) {
   List<Widget> widList = new List<Widget>();
   
   if (list == null) {
@@ -127,14 +129,14 @@ List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context) {
   list.forEach((Map<String, dynamic> info) {
     String link = info['link'];
     if (link != null) {
-      if (link.indexOf('.png') != -1 || link.indexOf('.jpg') != -1) {
+      if (link.indexOf('.png') != -1 || link.indexOf('.jpg') != -1 || link.indexOf('.gif') != -1) {
         widList.add(
           // Text(link)
           InkWell(
             onTap: () {
               showDialog(
                 context: context,
-                builder: (BuildContext context) {return PopupImg(image: info);},
+                builder: (BuildContext context) {return PopupImg(image: info, wrapper: wrapper,);},
               );
             },
             child: Container(

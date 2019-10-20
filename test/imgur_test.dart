@@ -1,5 +1,6 @@
-import 'package:epicture/imgur.dart';
+import 'package:epicture/API/imgur.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'dart:io';
 
 void main() {
   group("imgur connection", () {
@@ -81,7 +82,6 @@ void main() {
         expect(toto.success, true);
       });
     });
-
     group("album", () {
       test("Test get Album", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
@@ -91,7 +91,6 @@ void main() {
         var toto = await img.getAlbum('tynSLHI');
         expect(toto.success, true);
       });
-
       test("Test get images of album", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
@@ -100,7 +99,6 @@ void main() {
         var toto = await img.albumImages('tynSLHI');
         expect(toto.success, true);
       });
-
       test("Test get an image in an album", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
@@ -110,7 +108,6 @@ void main() {
         expect(toto.success, true);
       });
     });
-
     group("Gallery request", () {
       test("Test get Gallery", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
@@ -126,6 +123,14 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.getGalleryAlbum('tynSLHI');
+        expect(toto.success, true);
+      });
+      test("Test get Gallery image", () async {
+        Imgur img = Imgur('ca42024bf4b47ff',
+          '3688f84bd14578f16f3848bdd8fef68385df0a3e'
+        );
+        await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
+        var toto = await img.getGalleryImage('G4wI40E');
         expect(toto.success, true);
       });
       test("Test get Tags", () async {
@@ -152,10 +157,23 @@ void main() {
         var toto = await img.searchGallery("cats");
         expect(toto.success, true);
       });
+      test('Test get vote Gallery', () async {
+        Imgur img = Imgur('ca42024bf4b47ff',
+          '3688f84bd14578f16f3848bdd8fef68385df0a3e'
+        );
+        await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
+        var toto = await img.getVoteGallery('tynSLHI');
+        expect(toto.success, true);
+      });
+      test('Test vote Gallery', () async {
+        Imgur img = Imgur('ca42024bf4b47ff',
+          '3688f84bd14578f16f3848bdd8fef68385df0a3e'
+        );
+        await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
+        var toto = await img.setVoteGallery("tynSLHI");
+        expect(toto.success, true);
+      });
     });
-
-
-
     group("Image request", () {
       test("Test get Image", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
@@ -178,7 +196,7 @@ void main() {
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
-        var toto = await img.uploadImage("https://www.ablebulgaria.org/wp-content/uploads/bfi_thumb/boss-by-able-logo-1-nu1f3bnu62vz5api4bzx4dtdmvnvvf699f4h6ise60.jpg", "");
+        var toto = await img.uploadImage(img.transformFileImage(File("./galaxy.jpg")), "test");
         expect(toto.success, true);
       });
     });

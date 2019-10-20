@@ -1,10 +1,10 @@
-import 'package:epicture/core.dart';
-import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:epicture/API/loginScreen.dart';
 import 'dart:io';
+import 'dart:convert';
 
 class ImgurResponse {
   var data;
@@ -46,10 +46,13 @@ class Imgur {
 
   Imgur(this._clientId, this._clientSecret);
 
+  String transformFileImage(File img) {
+    return base64Encode(img.readAsBytesSync());
+  }
   Widget getButton(BuildContext context) {
 
+
     void LogIn() {
-      print("click");
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -79,7 +82,7 @@ class Imgur {
     );
   }
 
-  authentificateClient(String refreshToken) async {
+  Future<bool> authentificateClient(String refreshToken) async {
     var body = {
       "refresh_token": refreshToken,
       "client_id": _clientId,
@@ -88,6 +91,8 @@ class Imgur {
     };
     http.Response request = await http.post(Uri.parse("https://api.imgur.com/oauth2/token"), body: body);
     myUser = new User(json.decode(request.body));
+    ImgurResponse response = ImgurResponse(json.decode(request.body));
+    return response.success == null ? true : false;
   }
 
   /*********************
@@ -223,6 +228,13 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
+  Future<ImgurResponse> getGalleryImage(String galleryHash) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/image/$galleryHash'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
   Future<ImgurResponse> getTags() async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/tags'),
       headers: {'Authorization': "Client-ID $_clientId"}
@@ -252,6 +264,22 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
+  Future<ImgurResponse> getVoteGallery(String galleryHash) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/$galleryHash/votes'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
+  Future<ImgurResponse> setVoteGallery(String galleryHash, {
+    String vote = 'up', /// up | down | veto
+  }) async {
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/gallery/$galleryHash/vote/$vote'),
+      headers: {'Authorization': "Bearer ${myUser.accessToken}"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
   /*********************
   *** IMAGE REQUEST ****
   *********************/
@@ -264,7 +292,7 @@ class Imgur {
   }
 
   Future<ImgurResponse> favorite(String imageHash) async {
-    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
       headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
     return ImgurResponse(json.decode(source.body));
@@ -276,93 +304,5 @@ class Imgur {
       body: {"image" : imageHash, "title":title}
     );
     return ImgurResponse(json.decode(source.body));
-  }
-}
-
-class LoginScreen extends StatefulWidget {
-  LoginScreen(this.wrapper, {Key key, this.title}) : super(key: key);
-
-  final String title;
-  final Imgur wrapper;
-
-  @override
-  LoginScreenState createState() => LoginScreenState(wrapper);
-}
-
-class LoginScreenState extends State<LoginScreen> {
-
-  LoginScreenState(this.wrapper);
-
-  Imgur wrapper;
-
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
-  bool logo = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  static bool end = false;
-
-
-  @override
-  Widget build(BuildContext context) {
-    setState(() {
-      logo = true;
-      if (MediaQuery.of(context).viewInsets.bottom != 0) {
-        logo = false;
-      }
-    });
-    return Scaffold(
-      body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl:
-              'https://api.imgur.com/oauth2/authorize?client_id=ca42024bf4b47ff&response_type=token',
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },
-          javascriptChannels: <JavascriptChannel>[
-            _toasterJavascriptChannel(context),
-          ].toSet(),
-          navigationDelegate: (NavigationRequest request) {
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageFinished: (String url) {
-            print(url);
-            var pos = url.indexOf('refresh_token=');
-            if (pos != -1 && !end) {
-              end = true;
-              String token = url.substring(pos).replaceAll('refresh_token=', '');
-              pos = token.indexOf('&');
-              token = token.substring(0, pos);
-              print(token);
-              wrapper.authentificateClient(token).whenComplete(() {
-                print("test !");
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MainScreen(wrapper: wrapper),
-                  )
-                );
-              });
-            }
-          },
-        );
-      }),
-    );
-  }
-
-  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
-    return JavascriptChannel(
-        name: 'Toaster',
-        onMessageReceived: (JavascriptMessage message) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
-        });
   }
 }
