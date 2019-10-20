@@ -92,8 +92,6 @@ class Imgur {
     http.Response request = await http.post(Uri.parse("https://api.imgur.com/oauth2/token"), body: body);
     myUser = new User(json.decode(request.body));
     ImgurResponse response = ImgurResponse(json.decode(request.body));
-    print("############# Response");
-    print(json.decode(request.body));
     return response.success == null ? true : false;
   }
 
@@ -230,6 +228,13 @@ class Imgur {
     return ImgurResponse(json.decode(source.body));
   }
 
+  Future<ImgurResponse> getGalleryImage(String galleryHash) async {
+    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/gallery/image/$galleryHash'),
+      headers: {'Authorization': "Client-ID $_clientId"}
+    );
+    return ImgurResponse(json.decode(source.body));
+  }
+
   Future<ImgurResponse> getTags() async {
     http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/tags'),
       headers: {'Authorization': "Client-ID $_clientId"}
@@ -287,9 +292,10 @@ class Imgur {
   }
 
   Future<ImgurResponse> favorite(String imageHash) async {
-    http.Response source = await http.get(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
+    http.Response source = await http.post(Uri.parse('https://api.imgur.com/3/image/$imageHash/favorite'),
       headers: {'Authorization': "Bearer ${myUser.accessToken}"}
     );
+    print(json.decode(source.body));
     return ImgurResponse(json.decode(source.body));
   }
 

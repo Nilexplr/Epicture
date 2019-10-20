@@ -47,8 +47,6 @@ class LoginPageState extends State<LoginPage> {
     log.readData().then((String tok) {
       setState(() {
         token = tok;
-        print("#################### ICI LE TOKEN");
-        print(token);
       });
     });
   }
@@ -57,8 +55,6 @@ class LoginPageState extends State<LoginPage> {
     setState(() {
       if (token != null) {
         wrapper.authentificateClient(token).then((bool co) {
-            print("################ co is here");
-            print(co);
             setState(() {
               isLog = co;
               isLoading = false;
@@ -66,7 +62,6 @@ class LoginPageState extends State<LoginPage> {
         });
       } else {
           setState(() {
-            print("##############@@@ @ @@@ @ @@@ @ @@@ : // ? ][ coucou");
             isLog = false;
             isLoading = false;
           });
@@ -79,18 +74,15 @@ class LoginPageState extends State<LoginPage> {
     if (!stateIsEnd) {
       stateIsEnd = true;
       checkLogin();
-      print("chch");
       return Container(child: Center(child: CircularProgressIndicator()));
     }
 
     if (!stateIsEnd2) {
       stateIsEnd2 = true;
       checkGoodLogin();
-      print("wip");
     }
 
     if (!isLoading) {
-      print("loiding");
       scheduleMicrotask(() {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (BuildContext context) => LoginWidet(isLoading: false, isLog: isLog, wrapper: wrapper)
@@ -98,7 +90,6 @@ class LoginPageState extends State<LoginPage> {
       });
     }
 
-    print("oui");
     return Container(child: Center(child: CircularProgressIndicator()));
   }
 }
@@ -125,7 +116,6 @@ class LoginWidet extends StatelessWidget {
     }
 
     if (isLog) {
-      print("oui22");
       scheduleMicrotask(() {
         Navigator.pushReplacement(
             context,
