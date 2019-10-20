@@ -4,21 +4,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class PopupImg extends StatefulWidget {
   final Map<String, dynamic> image;
+  final Imgur wrapper;
 
-  PopupImg({Key key, @required this.image}) : super(key: key);
+  PopupImg({Key key, @required this.image, @required this.wrapper}) : super(key: key);
 
   @override
-  _PopupImg createState() => _PopupImg(image: image);
+  _PopupImg createState() => _PopupImg(image: image, wrapper: wrapper);
 }
 
 class _PopupImg extends State<PopupImg> {
   final Map<String, dynamic> image;
+  final Imgur wrapper;
 
-  _PopupImg({Key key, @required this.image});
+  _PopupImg({Key key, @required this.image, @required this.wrapper});
 
   @override
   Widget build(BuildContext context) {
-    String title = 'Untitled';
+    String title = '';
     if (image['title'] != null) {
       title = image['title'];
     }
@@ -61,7 +63,15 @@ class _PopupImg extends State<PopupImg> {
                       children: <Widget>[
                         Icon(Icons.thumb_up, color: Colors.grey[500]),
                         Text(title),
-                        Icon(Icons.star_border, color: Colors.grey[600]),
+                        IconButton(
+                          icon: image['favorite'] == true ? Icon(Icons.star, color: Colors.yellow[600]) : Icon(Icons.star_border, color: Colors.grey[600]),
+                          onPressed: () {
+                            setState(() {
+                              wrapper.favorite(image['id']);
+                              image['favorite'] = image['favorite'] == null ? true : !image['favorite'];                           
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),

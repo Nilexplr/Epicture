@@ -27,7 +27,6 @@ class AddPicture extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         onPressed: () {
-          print("hello world");
           Navigator.push(
             context, 
             MaterialPageRoute(
@@ -82,12 +81,14 @@ class _ImagePickerPage extends State<ImagePickerPage> {
       return Placeholder(color: Colors.white);
     }
     list.forEach((File file) {
-      widlList.add(
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
-          child: Image.file(file)
-        )
-      );
+      if (file != null) {
+        widlList.add(
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
+            child: Image.file(file)
+          )
+        );
+      }
     });
     return Padding(
       padding: EdgeInsets.all(5),

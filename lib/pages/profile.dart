@@ -32,7 +32,7 @@ class _Profile extends State<Profile> {
         list.add(value);
       });
       setState(() {
-        listImage = buildList(list, context);
+        listImage = buildList(list, context, wrapper);
         isLoading = false;
         doNotSkip = false;
       });
@@ -48,15 +48,17 @@ class _Profile extends State<Profile> {
         if (gallery != null) {
           if (gallery['images'] != null) {
             gallery['images'].forEach((dynamic value) {
+              value['favorite'] = true;
               list.add(value);
             });
           } else {
+            gallery['favorite'] = true;
             list.add(gallery);
           }
         }
       });
       setState(() {
-        listFav = buildList(list, context);
+        listFav = buildList(list, context, wrapper);
         doNotSkip = false;
       });
     });
@@ -117,7 +119,7 @@ class _Profile extends State<Profile> {
   }
 }
 
-List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context) {
+List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context, Imgur wrapper) {
   List<Widget> widList = new List<Widget>();
   
   if (list == null) {
@@ -134,7 +136,7 @@ List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context) {
             onTap: () {
               showDialog(
                 context: context,
-                builder: (BuildContext context) {return PopupImg(image: info);},
+                builder: (BuildContext context) {return PopupImg(image: info, wrapper: wrapper,);},
               );
             },
             child: Container(

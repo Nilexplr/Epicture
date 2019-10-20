@@ -126,6 +126,14 @@ void main() {
         var toto = await img.getGalleryAlbum('tynSLHI');
         expect(toto.success, true);
       });
+      test("Test get Gallery image", () async {
+        Imgur img = Imgur('ca42024bf4b47ff',
+          '3688f84bd14578f16f3848bdd8fef68385df0a3e'
+        );
+        await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
+        var toto = await img.getGalleryImage('G4wI40E');
+        expect(toto.success, true);
+      });
       test("Test get Tags", () async {
         Imgur img = Imgur('ca42024bf4b47ff',
           '3688f84bd14578f16f3848bdd8fef68385df0a3e'
