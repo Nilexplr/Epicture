@@ -92,7 +92,9 @@ class Imgur {
     http.Response request = await http.post(Uri.parse("https://api.imgur.com/oauth2/token"), body: body);
     myUser = new User(json.decode(request.body));
     ImgurResponse response = ImgurResponse(json.decode(request.body));
-    return response.success;
+    print("############# Response");
+    print(json.decode(request.body));
+    return response.success == null ? true : false;
   }
 
   /*********************
