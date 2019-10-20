@@ -21,6 +21,11 @@ class _Search extends State<Search> {
 
   _Search({Key key, @required this.wrapper});
 
+  String window = "day";
+  String section = "hot";
+  String sort = "viral";
+  String _search = "";
+
   void clear() {
     _listResult.clear();
   }
@@ -35,8 +40,53 @@ class _Search extends State<Search> {
     });
   }
 
+  void update(String search) {
+    _search = search;
+    wrapper.searchGallery(
+      search,
+      window: window,
+      //section: section,
+      sort: sort,
+    ).then((ImgurResponse res) {
+    if (res.data != null) {
+        this.clear();
+        res.data.forEach((dynamic gallery) {
+          if (gallery['images'] != null) {
+            gallery['images'].forEach((dynamic img) {
+              this.addImg(img);
+            });
+          } else if (gallery != null) {
+              this.addImg(gallery);
+          }
+        });
+        this.rebuildStatsList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_listResult.length == 0 && _search.length == 0) {
+      wrapper.getGallery(
+        window: window,
+        section: section,
+        sort: sort,
+      ).then((ImgurResponse res) {
+        if (res.data != null) {
+          res.data.forEach((dynamic gallery) {
+            if (gallery != null && gallery['images'] != null) {
+              gallery['images'].forEach((dynamic img) {
+                _listResult.add(img);
+              });
+            }
+          });
+        }
+        this.rebuildStatsList();
+      });
+    } else if (_listResult.length == 0) {
+      this.update(_search);
+    }
+
     return Container(
       color: Colors.transparent,
       child: Stack(
@@ -48,7 +98,101 @@ class _Search extends State<Search> {
             child: SearchBar(wrapper: wrapper, daddy: this),
           ),
           Positioned(
-            top: 130,
+            top: 100,
+            child: Container(
+              width: 400,
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  DropdownButton<String>(
+                    value: window,
+                    icon: Icon(Icons.arrow_downward, color:  Colors.white,),
+                    iconSize: 20,
+                    elevation: 18,
+                    style: TextStyle(
+                      color: Colors.blue
+                    ),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.white,
+                    ),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        this.clear();
+                        window = newValue;
+                      });
+                    },
+                    items: <String>['day', 'week', 'month', 'year', 'all']
+                      .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      })
+                      .toList(),
+                  ),
+                  DropdownButton<String>(
+                    value: section,
+                    icon: Icon(Icons.arrow_downward, color:  Colors.white,),
+                    iconSize: 20,
+                    elevation: 18,
+                    style: TextStyle(
+                      color: Colors.blue
+                    ),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.white,
+                    ),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        this.clear();
+                        section = newValue;
+                      });
+                    },
+                    items: <String>['hot', 'top', 'user']
+                      .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      })
+                      .toList(),
+                  ),
+                  DropdownButton<String>(
+                    value: sort,
+                    icon: Icon(Icons.arrow_downward, color:  Colors.white,),
+                    iconSize: 20,
+                    elevation: 18,
+                    style: TextStyle(
+                      color: Colors.blue
+                    ),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.white,
+                    ),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        this.clear();
+                        sort = newValue;
+                      });
+                    },
+                    items: <String>['viral', 'top', 'time', 'rising']
+                      .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      })
+                      .toList(),
+                  ),
+                ],
+              )
+            ),
+          ),
+          Positioned(
+            top: 160,
             left: 5,
             width: 382,
             height: 545,
@@ -80,21 +224,7 @@ class SearchBar extends StatelessWidget {
 
   handleKeyPress(String search) {
     print(search);
-    wrapper.searchGallery(search).then((ImgurResponse res) {
-      if (res.data != null) {
-        daddy.clear();
-        res.data.forEach((dynamic gallery) {
-          if (gallery['images'] != null) {
-            gallery['images'].forEach((dynamic img) {
-              daddy.addImg(img);
-            });
-          } else if (gallery != null) {
-              daddy.addImg(gallery);
-          }
-        });
-        daddy.rebuildStatsList();
-      }
-    });
+    daddy.update(search);
   }
 
   @override
