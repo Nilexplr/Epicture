@@ -127,7 +127,7 @@ List<Widget> buildList(List<Map<String, dynamic>> list, BuildContext context) {
   list.forEach((Map<String, dynamic> info) {
     String link = info['link'];
     if (link != null) {
-      if (link.indexOf('.png') != -1 || link.indexOf('.jpg') != -1) {
+      if (link.indexOf('.png') != -1 || link.indexOf('.jpg') != -1 || link.indexOf('.gif') != -1) {
         widList.add(
           // Text(link)
           InkWell(

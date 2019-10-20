@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:epicture/imgur.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:epicture/pages/uploadPicture.dart';
+
+List<File> _fileToSend;
 
 class AddPicture extends StatelessWidget {
 
@@ -21,6 +24,19 @@ class AddPicture extends StatelessWidget {
         color: Colors.transparent,
         child: ImagePickerPage(),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.check),
+        onPressed: () {
+          print("hello world");
+          Navigator.push(
+            context, 
+            MaterialPageRoute(
+              builder: (context) => UploadPicture(wrapper: wrapper, files: _fileToSend)
+            )
+          );
+        },
+        backgroundColor: Colors.green[600],
+      ),
     );
   }
 }
@@ -32,13 +48,15 @@ class ImagePickerPage extends StatefulWidget {
 }
 
 class _ImagePickerPage extends State<ImagePickerPage> {
-  List<File> _imageFile = null;
+  List<File> _imageFile;
 
   @override
   Widget build(BuildContext context) {
+    _fileToSend = _imageFile;
     return ListView(
       children: <Widget>[
         ButtonBar(
+          alignment: MainAxisAlignment.center,
           children: <Widget>[
             IconButton(
               icon: Icon(Icons.photo_camera, color: Colors.white),
@@ -53,13 +71,6 @@ class _ImagePickerPage extends State<ImagePickerPage> {
           ],
         ),
         buildImageListView(this._imageFile),
-        FloatingActionButton(
-          child: Icon(Icons.check),
-          onPressed: () {
-            print("hello world");
-          },
-          backgroundColor: Colors.green[600],
-        )
       ],
     );
   }
@@ -71,10 +82,18 @@ class _ImagePickerPage extends State<ImagePickerPage> {
       return Placeholder(color: Colors.white);
     }
     list.forEach((File file) {
-      widlList.add(Image.file(file));
+      widlList.add(
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
+          child: Image.file(file)
+        )
+      );
     });
-    return Column(
-      children: widlList,
+    return Padding(
+      padding: EdgeInsets.all(5),
+      child: Column(
+        children: widlList,
+      )
     );
   }
 
