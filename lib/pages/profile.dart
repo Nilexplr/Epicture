@@ -64,6 +64,16 @@ class _Profile extends State<Profile> {
     });
   }
 
+  dynamic user;
+
+  void _buildProfile() {
+    wrapper.accountBase().then((ImgurResponse res) {
+      setState(() {
+        user = res.data;
+      });
+    });
+  }
+
   var img;
 
   @override
@@ -71,6 +81,7 @@ class _Profile extends State<Profile> {
     if (doNotSkip) {
       _buildImageList(context);
       _buildFavList(context);
+      _buildProfile();
     }
 
     if (isLoading) {
@@ -83,7 +94,9 @@ class _Profile extends State<Profile> {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: Image.asset('assets/Epicturelogo.png'),
+            title: Container(
+              child: Text(user['url']),
+            ),
             centerTitle: true,
             bottom: TabBar(
               tabs: [
