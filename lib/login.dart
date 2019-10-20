@@ -129,6 +129,7 @@ class LoginWidet extends StatelessWidget {
 
     return Scaffold(
         body: Container(
+          constraints: BoxConstraints.expand(),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -141,8 +142,18 @@ class LoginWidet extends StatelessWidget {
                   color1,
                   color2,
                 ])),
-            child: Center(
-              child: wrapper.getButton(context),
+            child: Stack(
+              alignment: AlignmentDirectional.topCenter,
+              children: <Widget>[
+                Positioned(
+                  top: 160,
+                  child: Image.asset('assets/Epicturelogo.png')
+                ),
+                Positioned(
+                  bottom: 50,
+                  child: wrapper.getButton(context)
+                ),
+              ],
             )));
   }
 }
