@@ -150,6 +150,22 @@ void main() {
         var toto = await img.searchGallery("cats");
         expect(toto.success, true);
       });
+      test('Test get vote Gallery', () async {
+        Imgur img = Imgur('ca42024bf4b47ff',
+          '3688f84bd14578f16f3848bdd8fef68385df0a3e'
+        );
+        await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
+        var toto = await img.getVoteGallery('tynSLHI');
+        expect(toto.success, true);
+      });
+      test('Test vote Gallery', () async {
+        Imgur img = Imgur('ca42024bf4b47ff',
+          '3688f84bd14578f16f3848bdd8fef68385df0a3e'
+        );
+        await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
+        var toto = await img.setVoteGallery("tynSLHI");
+        expect(toto.success, true);
+      });
     });
     group("Image request", () {
       test("Test get Image", () async {

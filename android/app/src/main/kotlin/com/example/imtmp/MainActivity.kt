@@ -1,4 +1,4 @@
-package com.example.imtmp
+package com.example.epicture
 
 import android.os.Bundle
 
