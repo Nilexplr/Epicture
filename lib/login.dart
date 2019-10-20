@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:epicture/const.dart';
 import 'package:epicture/core.dart';
-import 'package:epicture/imgur.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:epicture/API/imgur.dart';
 
 class MyApp extends StatelessWidget {
   @override
