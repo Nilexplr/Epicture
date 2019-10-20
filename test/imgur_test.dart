@@ -1,7 +1,6 @@
 import 'package:epicture/API/imgur.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
-import 'package:epicture/API/loginScreen.dart';
 
 void main() {
   group("imgur connection", () {
@@ -182,7 +181,6 @@ void main() {
         );
         await img.authentificateClient('90f925e2dfb00b0869804f78d0487806bd453af6');
         var toto = await img.favorite("9R3tBRY");
-        print(toto.data);
         expect(toto.success, true);
       });
       test("Test add image", () async {
